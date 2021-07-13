@@ -340,7 +340,7 @@ function enemyFires () {
         game.physics.arcade.moveToObject(enemyBullet,player,enemyFiresSpeed);
         // 敵の弾の間隔
         // firingTimer = game.time.now + enemyFiresInterval;
-        firingTimer = game.time.now + randRange(100, 500);
+        firingTimer = game.time.now + randRange(200, 500);
     }
 
 }
