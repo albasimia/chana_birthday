@@ -55,7 +55,7 @@ var livingEnemies = [];
 
 
 // makoto
-var aliensRow = 6;
+var aliensRow = 4;
 var aliensCol = 10;
 var enemyFiresSpeed = 360;
 // var enemyFiresInterval = 500;
