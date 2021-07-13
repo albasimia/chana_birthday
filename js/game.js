@@ -1,6 +1,6 @@
 
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(800, 600, Phaser.AUTO, 'makovader', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
 
@@ -25,6 +25,16 @@ function preload() {
 
 }
 
+var messages = [
+    "おめでとう1",
+    "おめでとう2",
+    "おめでとう3",
+    "おめでとう4",
+    "おめでとう5",
+    "おめでとう6",
+    "おめでとう7",
+]
+
 var player;
 var aliens;
 var bullets;
@@ -44,14 +54,12 @@ var livingEnemies = [];
 
 
 
-// var aliensRow = 4;
-// var aliensCol = 10;
-var aliensRow = 1;
-var aliensCol = 1;
-// 敵の弾
+// makoto
+var aliensRow = 6;
+var aliensCol = 10;
 var enemyFiresSpeed = 360;
 // var enemyFiresInterval = 500;
-var enemyFiresInterval = 3000;
+// var enemyFiresInterval = 3000;
 
 
 
@@ -262,7 +270,7 @@ function collisionHandler (bullet, alien) {
         scoreText.text = scoreString + score;
 
         enemyBullets.callAll('kill',this);
-        stateText.text = "チャナ、 \n お誕生日おめでとう";
+        stateText.text = messages[randRange(0, messages.length-1)];
         stateText.visible = true;
 
         startEnding();
@@ -331,7 +339,8 @@ function enemyFires () {
         //moveToObject(出発地点、目的地、速度)
         game.physics.arcade.moveToObject(enemyBullet,player,enemyFiresSpeed);
         // 敵の弾の間隔
-        firingTimer = game.time.now + enemyFiresInterval;
+        // firingTimer = game.time.now + enemyFiresInterval;
+        firingTimer = game.time.now + randRange(100, 500);
     }
 
 }
@@ -381,3 +390,5 @@ function restart () {
     startBgm();
 
 }
+
+const randRange = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
