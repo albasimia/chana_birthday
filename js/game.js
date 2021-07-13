@@ -1,30 +1,5 @@
-
-
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'makovader', { preload: preload, create: create, update: update, render: render });
-
-function preload() {
-
-    // images
-    game.load.image('bullet', 'img/invaders/bullet.png');
-    game.load.image('enemyBullet', 'img/invaders/enemy-bullet.png');
-    // game.load.spritesheet('invader', '../assets/games/invaders/invader32x32x4.png', 32, 32);
-    game.load.image('invader', 'img/makoto.png');
-    // game.load.image('ship', '../assets/games/invaders/player.png');
-    game.load.image('ship', 'img/channa.png');
-    game.load.spritesheet('kaboom', 'img/invaders/explode.png', 128, 128);
-    game.load.image('starfield', 'img/invaders/starfield.png');
-    game.load.image('background', 'img/invaders/background2.png');
-
-
-
-    //sounds
-    game.load.audio('bgm', 'audio/watari_birthday.mp3');
-    game.load.audio('ending', 'audio/ending.mp3');
-
-    game.load.audio('sfx', 'audio/saku.mp3');
-
-}
-
+var width = 800;
+var height = 600;
 var messages = [
     "おめでとう1",
     "おめでとう2",
@@ -67,6 +42,32 @@ var enemyFiresSpeed = 360;
 var bgm;
 var fx;
 var ending;
+
+
+var game = new Phaser.Game(width, height, Phaser.AUTO, 'makovader', { preload: preload, create: create, update: update, render: render });
+
+function preload() {
+
+    // images
+    game.load.image('bullet', 'img/invaders/bullet.png');
+    game.load.image('enemyBullet', 'img/invaders/enemy-bullet.png');
+    // game.load.spritesheet('invader', '../assets/games/invaders/invader32x32x4.png', 32, 32);
+    game.load.image('invader', 'img/makoto.png');
+    // game.load.image('ship', '../assets/games/invaders/player.png');
+    game.load.image('ship', 'img/channa.png');
+    game.load.spritesheet('kaboom', 'img/invaders/explode.png', 128, 128);
+    game.load.image('starfield', 'img/invaders/starfield.png');
+    game.load.image('background', 'img/invaders/background2.png');
+
+
+
+    //sounds
+    game.load.audio('bgm', 'audio/watari_birthday.mp3');
+    game.load.audio('ending', 'audio/ending.mp3');
+
+    game.load.audio('sfx', 'audio/saku.mp3');
+
+}
 
 function create() {
 
@@ -213,11 +214,11 @@ function update() {
         //  Reset the player, then check for movement keys
         player.body.velocity.setTo(0, 0);
 
-        if (cursors.left.isDown)
+        if (cursors.left.isDown && player.body.x > 0)
         {
             player.body.velocity.x = -200;
         }
-        else if (cursors.right.isDown)
+        else if (cursors.right.isDown && player.body.x < width - player.body.width)
         {
             player.body.velocity.x = 200;
         }
