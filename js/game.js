@@ -4,6 +4,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: p
 
 function preload() {
 
+    // images
     game.load.image('bullet', 'img/invaders/bullet.png');
     game.load.image('enemyBullet', 'img/invaders/enemy-bullet.png');
     // game.load.spritesheet('invader', '../assets/games/invaders/invader32x32x4.png', 32, 32);
@@ -13,6 +14,14 @@ function preload() {
     game.load.spritesheet('kaboom', 'img/invaders/explode.png', 128, 128);
     game.load.image('starfield', 'img/invaders/starfield.png');
     game.load.image('background', 'img/invaders/background2.png');
+
+
+
+    //sounds
+    game.load.audio('bgm', 'audio/watari_birthday.mp3');
+    game.load.audio('ending', 'audio/ending.mp3');
+
+    game.load.audio('sfx', 'audio/saku.mp3');
 
 }
 
@@ -32,6 +41,24 @@ var enemyBullet;
 var firingTimer = 0;
 var stateText;
 var livingEnemies = [];
+
+
+
+// var aliensRow = 4;
+// var aliensCol = 10;
+var aliensRow = 1;
+var aliensCol = 1;
+// 敵の弾
+var enemyFiresSpeed = 360;
+// var enemyFiresInterval = 500;
+var enemyFiresInterval = 3000;
+
+
+
+// sounds
+var bgm;
+var fx;
+var ending;
 
 function create() {
 
@@ -101,14 +128,40 @@ function create() {
     //  And some controls to play the game with
     cursors = game.input.keyboard.createCursorKeys();
     fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+
+    // sounds
+    bgm = game.add.audio('bgm');
+    ending = game.add.audio('ending');
+
     
+    game.sound.setDecodedCallback(bgm, startBgm, this);
+
+
+    fx = game.add.audio('sfx');
+    fx.allowMultiple = true;
+    fx.addMarker('playerFire', 0, 0.749);
+}
+
+function startBgm() {
+
+    // sounds.shift();
+    ending.stop();
+    bgm.loopFull(0.4);
+    // bgm.play("", 0, 0.4, true);
+    // bgm.onLoop.add(hasLooped, this);
+}
+
+function startEnding() {
+    bgm.stop();
+    ending.loopFull(0.2);
 }
 
 function createAliens () {
 
-    for (var y = 0; y < 4; y++)
+    for (var y = 0; y < aliensRow; y++)
     {
-        for (var x = 0; x < 10; x++)
+        for (var x = 0; x < aliensCol; x++)
         {
             var alien = aliens.create(x * 48, y * 50, 'invader');
             alien.anchor.setTo(0.5, 0.5);
@@ -212,6 +265,8 @@ function collisionHandler (bullet, alien) {
         stateText.text = "チャナ、 \n お誕生日おめでとう";
         stateText.visible = true;
 
+        startEnding();
+
         //the "click to restart" handler
         game.input.onTap.addOnce(restart,this);
     }
@@ -274,10 +329,9 @@ function enemyFires () {
         enemyBullet.reset(shooter.body.x, shooter.body.y);
 
         //moveToObject(出発地点、目的地、速度)
-        game.physics.arcade.moveToObject(enemyBullet,player,360);
+        game.physics.arcade.moveToObject(enemyBullet,player,enemyFiresSpeed);
         // 敵の弾の間隔
-        // firingTimer = game.time.now + 500;
-        firingTimer = game.time.now + 6000;
+        firingTimer = game.time.now + enemyFiresInterval;
     }
 
 }
@@ -296,6 +350,7 @@ function fireBullet () {
             bullet.reset(player.x, player.y + 8);
             bullet.body.velocity.y = -400;
             bulletTime = game.time.now + 200;
+            fx.play('playerFire');
         }
     }
 
@@ -322,5 +377,7 @@ function restart () {
     player.revive();
     //hides the text
     stateText.visible = false;
+
+    startBgm();
 
 }
