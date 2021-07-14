@@ -1,13 +1,23 @@
+var params = new URLSearchParams(window.location.search)
+
 var width = 800;
 var height = 600;
-var messages = [
-    "おめでとう1",
-    "おめでとう2",
-    "おめでとう3",
-    "おめでとう4",
-    "おめでとう5",
-    "おめでとう6",
-    "おめでとう7",
+var messages = [{
+        name: "伊東マコト",
+        msg: "貴様のお誕生日は沢山の\nマコトの犠牲の上に成り立っています。\nおめでとう。",
+    },
+    {
+        name: "エリシア",
+        msg: "お誕生日ﾆｬ\nおめでﾆｬ-とうございﾆｬます！\nﾆｬ(*ΦωΦ)ฅ",
+    },
+    {
+        name: "まきこ",
+        msg: "チャナさんおたおめ〜！\nいつもいっぱいおはなししてくれて\n嬉しいよ〜すき！",
+    },
+    {
+        name: "香蘭",
+        msg: "お誕生日おめでとう！\n素敵な一年を！",
+    },
 ]
 
 var player;
@@ -25,13 +35,16 @@ var lives;
 var enemyBullet;
 var firingTimer = 0;
 var stateText;
+var nameText;
 var livingEnemies = [];
-
+var watari;
 
 
 // makoto
-var aliensRow = 4;
-var aliensCol = 10;
+var aliensRow = params.get('row') ? params.get('row') : 3;
+var aliensCol = params.get('col') ? params.get('col') : 15;
+// var aliensRow = 1;
+// var aliensCol = 1;
 var enemyFiresSpeed = 360;
 // var enemyFiresInterval = 500;
 // var enemyFiresInterval = 3000;
@@ -43,21 +56,30 @@ var bgm;
 var fx;
 var ending;
 
+document.querySelector('.msg_num').innerText = messages.length;
 
-var game = new Phaser.Game(width, height, Phaser.AUTO, 'makovader', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(width, height, Phaser.AUTO, 'makovader', {
+    preload: preload,
+    create: create,
+    update: update,
+    render: render
+});
 
 function preload() {
 
     // images
-    game.load.image('bullet', 'img/invaders/bullet.png');
-    game.load.image('enemyBullet', 'img/invaders/enemy-bullet.png');
+    game.load.image('bullet', 'img/tsuno.png');
+    // game.load.image('enemyBullet', 'img/invaders/enemy-bullet.png');
+    game.load.image('enemyBullet', 'img/unko.png');
     // game.load.spritesheet('invader', '../assets/games/invaders/invader32x32x4.png', 32, 32);
     game.load.image('invader', 'img/makoto.png');
     // game.load.image('ship', '../assets/games/invaders/player.png');
-    game.load.image('ship', 'img/channa.png');
+    game.load.image('ship', 'img/chana.png');
     game.load.spritesheet('kaboom', 'img/invaders/explode.png', 128, 128);
-    game.load.image('starfield', 'img/invaders/starfield.png');
+    game.load.image('starfield', 'img/sora.png');
     game.load.image('background', 'img/invaders/background2.png');
+    game.load.image('heart', 'img/heart.png');
+    game.load.image('watari', 'img/heart.png');
 
 
 
@@ -96,6 +118,19 @@ function create() {
     enemyBullets.setAll('outOfBoundsKill', true);
     enemyBullets.setAll('checkWorldBounds', true);
 
+
+
+    watari = game.add.group();
+    watari.enableBody = true;
+    watari.physicsBodyType = Phaser.Physics.ARCADE;
+    watari.createMultiple(30, 'watari');
+    watari.setAll('anchor.x', 0.5);
+    watari.setAll('anchor.y', 1);
+    watari.setAll('outOfBoundsKill', true);
+    watari.setAll('checkWorldBounds', true);
+
+
+
     //  The hero!
     player = game.add.sprite(400, 500, 'ship');
     player.anchor.setTo(0.5, 0.5);
@@ -110,23 +145,43 @@ function create() {
 
     //  The score
     scoreString = 'Score : ';
-    scoreText = game.add.text(10, 10, scoreString + score, { font: '34px Arial', fill: '#fff' });
+    scoreText = game.add.text(10, 10, scoreString + score, {
+        font: '34px Arial',
+        fill: '#000'
+    });
 
     //  Lives
     lives = game.add.group();
-    game.add.text(game.world.width - 100, 10, 'Lives : ', { font: '34px Arial', fill: '#fff' });
+    // game.add.text(game.world.width - 100, 10, 'Lives : ', { font: '34px Arial', fill: '#fff' });
 
     //  Text
-    stateText = game.add.text(game.world.centerX,game.world.centerY,' ', { font: '84px Arial', fill: '#fff', align: 'center'});
+    stateText = game.add.text(game.world.centerX, game.world.centerY, ' ', {
+        font: '40px Arial',
+        fill: '#ec008c',
+        align: 'center',
+        wordWrap: true,
+        wordWrapWidth: 500,
+        maxLines: 4,
+        fontWeight: 'bold',
+    });
     stateText.anchor.setTo(0.5, 0.5);
     stateText.visible = false;
 
-    for (var i = 0; i < 3; i++) 
-    {
-        var ship = lives.create(game.world.width - 100 + (30 * i), 60, 'ship');
+    nameText = game.add.text(game.world.centerX, game.world.centerY, ' ', {
+        font: '30px Arial',
+        fill: '#ec008c',
+        align: 'center',
+        wordWrap: true,
+        wordWrapWidth: 500,
+        maxLines: 4,
+        fontWeight: 'bold',
+    });
+    nameText.anchor.setTo(0.5, 0.5);
+    nameText.visible = false;
+
+    for (var i = 0; i < 3; i++) {
+        var ship = lives.create(game.world.width - 100 + (30 * i), 60, 'heart');
         ship.anchor.setTo(0.5, 0.5);
-        ship.angle = 90;
-        ship.alpha = 0.4;
     }
 
     //  An explosion pool
@@ -143,7 +198,7 @@ function create() {
     bgm = game.add.audio('bgm');
     ending = game.add.audio('ending');
 
-    
+
     game.sound.setDecodedCallback(bgm, startBgm, this);
 
 
@@ -166,31 +221,31 @@ function startEnding() {
     ending.loopFull(0.2);
 }
 
-function createAliens () {
+function createAliens() {
 
-    for (var y = 0; y < aliensRow; y++)
-    {
-        for (var x = 0; x < aliensCol; x++)
-        {
-            var alien = aliens.create(x * 48, y * 50, 'invader');
+    for (var y = 0; y < aliensRow; y++) {
+        for (var x = 0; x < aliensCol; x++) {
+            var alien = aliens.create(x * 40, y * 65, 'invader');
             alien.anchor.setTo(0.5, 0.5);
-            alien.animations.add('fly', [ 0, 1, 2, 3 ], 20, true);
+            alien.animations.add('fly', [0, 1, 2, 3], 20, true);
             alien.play('fly');
             alien.body.moves = false;
         }
     }
 
-    aliens.x = 100;
+    aliens.x = 50;
     aliens.y = 50;
 
     //  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
-    var tween = game.add.tween(aliens).to( { x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+    var tween = game.add.tween(aliens).to({
+        x: 200
+    }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
 
     //  When the tween loops it calls descend
     tween.onLoop.add(descend, this);
 }
 
-function setupInvader (invader) {
+function setupInvader(invader) {
 
     invader.anchor.x = 0.5;
     invader.anchor.y = 0.5;
@@ -209,34 +264,29 @@ function update() {
     //  Scroll the background
     starfield.tilePosition.y += 2;
 
-    if (player.alive)
-    {
+    if (player.alive) {
         //  Reset the player, then check for movement keys
         player.body.velocity.setTo(0, 0);
 
-        if (cursors.left.isDown && player.body.x > 0)
-        {
+        if (cursors.left.isDown && player.body.x > 0) {
             player.body.velocity.x = -200;
-        }
-        else if (cursors.right.isDown && player.body.x < width - player.body.width)
-        {
+        } else if (cursors.right.isDown && player.body.x < width - player.body.width) {
             player.body.velocity.x = 200;
         }
 
         //  Firing?
-        if (fireButton.isDown)
-        {
+        if (fireButton.isDown) {
             fireBullet();
         }
 
-        if (game.time.now > firingTimer)
-        {
+        if (game.time.now > firingTimer) {
             enemyFires();
         }
 
         //  Run collision
         game.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
         game.physics.arcade.overlap(enemyBullets, player, enemyHitsPlayer, null, this);
+        game.physics.arcade.overlap(watari, player, enemyHitsPlayer, null, this);
     }
 
 }
@@ -250,7 +300,7 @@ function render() {
 
 }
 
-function collisionHandler (bullet, alien) {
+function collisionHandler(bullet, alien) {
 
     //  When a bullet hits an alien we kill them both
     bullet.kill();
@@ -265,32 +315,40 @@ function collisionHandler (bullet, alien) {
     explosion.reset(alien.body.x, alien.body.y);
     explosion.play('kaboom', 30, false, true);
 
-    if (aliens.countLiving() == 0)
-    {
+    if (aliens.countLiving() == 0) {
         score += 1000;
         scoreText.text = scoreString + score;
 
-        enemyBullets.callAll('kill',this);
-        stateText.text = messages[randRange(0, messages.length-1)];
+        // enemyBullets.callAll('kill', this);
+        enemyBullets.callAll('kill');
+        watari.callAll('kill');
+        const randIndex = randRange(0, messages.length - 1);
+        stateText.text = messages[randIndex].msg;
         stateText.visible = true;
+        nameText.text = messages[randIndex].name;
+        nameText.y = stateText.bottom + 30;
+        nameText.visible = true;
 
         startEnding();
 
         //the "click to restart" handler
-        game.input.onTap.addOnce(restart,this);
+        game.input.onTap.addOnce(restart, this);
     }
 
 }
 
-function enemyHitsPlayer (player,bullet) {
-    
+function enemyHitsPlayer(player, bullet) {
+
     bullet.kill();
 
-    live = lives.getFirstAlive();
+    if (bullet.key == 'watari') {
+        lives.callAll('kill');
+    } else {
+        live = lives.getFirstAlive();
 
-    if (live)
-    {
-        live.kill();
+        if (live) {
+            live.kill();
+        }
     }
 
     //  And create an explosion :)
@@ -299,84 +357,83 @@ function enemyHitsPlayer (player,bullet) {
     explosion.play('kaboom', 30, false, true);
 
     // When the player dies
-    if (lives.countLiving() < 1)
-    {
+    if (lives.countLiving() < 1) {
         player.kill();
         enemyBullets.callAll('kill');
 
-        stateText.text=" GAME OVER \n Click to restart";
+        stateText.text = " GAME OVER \n Click to restart";
         stateText.visible = true;
 
         //the "click to restart" handler
-        game.input.onTap.addOnce(restart,this);
+        game.input.onTap.addOnce(restart, this);
     }
 
 }
 
-function enemyFires () {
+function enemyFires() {
 
     //  Grab the first bullet we can from the pool
-    enemyBullet = enemyBullets.getFirstExists(false);
+    const isWatari = randRange(1, 5) == 1 ? true : false;
+    // const isWatari = true;
+    enemyBullet = isWatari ? watari.getFirstExists(false) : enemyBullets.getFirstExists(false);
 
-    livingEnemies.length=0;
+    livingEnemies.length = 0;
 
-    aliens.forEachAlive(function(alien){
+    aliens.forEachAlive(function (alien) {
 
         // put every living enemy in an array
         livingEnemies.push(alien);
     });
 
 
-    if (enemyBullet && livingEnemies.length > 0)
-    {
-        
-        var random=game.rnd.integerInRange(0,livingEnemies.length-1);
+    if (enemyBullet && livingEnemies.length > 0) {
+
+        var random = game.rnd.integerInRange(0, livingEnemies.length - 1);
 
         // randomly select one of them
-        var shooter=livingEnemies[random];
+        var shooter = livingEnemies[random];
         // And fire the bullet from this enemy
         enemyBullet.reset(shooter.body.x, shooter.body.y);
 
         //moveToObject(出発地点、目的地、速度)
-        game.physics.arcade.moveToObject(enemyBullet,player,enemyFiresSpeed);
+        const speed = isWatari ? 600 : enemyFiresSpeed;
+        game.physics.arcade.moveToObject(enemyBullet, player, speed);
         // 敵の弾の間隔
         // firingTimer = game.time.now + enemyFiresInterval;
-        firingTimer = game.time.now + randRange(200, 500);
+        firingTimer = game.time.now + randRange(250, 500);
     }
 
 }
 
-function fireBullet () {
+function fireBullet() {
 
     //  To avoid them being allowed to fire too fast we set a time limit
-    if (game.time.now > bulletTime)
-    {
+    if (game.time.now > bulletTime) {
         //  Grab the first bullet we can from the pool
         bullet = bullets.getFirstExists(false);
 
-        if (bullet)
-        {
+        if (bullet) {
             //  And fire it
-            bullet.reset(player.x, player.y + 8);
+            bullet.reset(player.x, player.y);
             bullet.body.velocity.y = -400;
-            bulletTime = game.time.now + 200;
+            bulletTime = game.time.now + 250;
             fx.play('playerFire');
         }
     }
 
 }
 
-function resetBullet (bullet) {
+function resetBullet(bullet) {
 
     //  Called if the bullet goes out of the screen
     bullet.kill();
 
 }
 
-function restart () {
+function restart() {
 
     //  A new level starts
-    
+
     //resets the life count
     lives.callAll('revive');
     //  And brings the aliens back from the dead :)
@@ -387,6 +444,7 @@ function restart () {
     player.revive();
     //hides the text
     stateText.visible = false;
+    nameText.visible = false;
 
     startBgm();
 
