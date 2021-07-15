@@ -25,7 +25,7 @@ var messages = [
     },
     {
         name: "ぷりん",
-        msg: "ちゃやまさるお\n誕生日おめでとう( ᐡ.  ̫ .ᐡ )\nまた旅行いこうね♡",
+        msg: "ちゃやまさる\nお誕生日おめでとう( ᐡ.  ̫ .ᐡ )\nまた旅行いこうね♡",
     },
     {
         name: "すーぎの",
@@ -472,7 +472,7 @@ function restart() {
     //  A new level starts
     score = 0;
     scoreText.text = scoreString + score;
-    
+
     bullets.callAll('kill');
 
     //resets the life count
