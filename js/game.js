@@ -35,6 +35,14 @@ var messages = [
         name: "たにこう",
         msg: "お誕生日メッセージかぁ…\n何がいいかな、どんなのにしようか、\nえっ！もうカメラ回ってるの！？\n待って待っ",
     },
+    {
+        name: "ライコ",
+        msg: "Happy birthday Chana masala!\nIf you play this game,\nit's your birthday every day,\noh my god!",
+    },
+    {
+        name: "たき",
+        msg: "ちゃな誕生日おめでとう！\n楽しい事いっぱいの\n１年になりますように♡",
+    },
 ]
 
 var player;
@@ -177,8 +185,7 @@ function create() {
         fill: '#ec008c',
         align: 'center',
         wordWrap: true,
-        wordWrapWidth: 500,
-        maxLines: 4,
+        wordWrapWidth: 800,
         fontWeight: 'bold',
     });
     stateText.anchor.setTo(0.5, 0.5);
@@ -376,7 +383,9 @@ function enemyHitsPlayer(player, bullet) {
     // When the player dies
     if (lives.countLiving() < 1) {
         player.kill();
+        bullets.callAll('kill'); 
         enemyBullets.callAll('kill');
+        watari.callAll('kill');
 
         stateText.text = " GAME OVER \n Click to restart";
         stateText.visible = true;
