@@ -59,6 +59,8 @@ var scoreText;
 var lives;
 var enemyBullet;
 var firingTimer = 0;
+var scoreTimer = 0;
+var state = 'start'; // start, play, clear, gameover
 var stateText;
 var nameText;
 var livingEnemies = [];
@@ -109,8 +111,8 @@ function preload() {
 
 
     //sounds
-    game.load.audio('bgm', 'audio/watari_birthday.mp3');
-    game.load.audio('ending', 'audio/ending.mp3');
+    game.load.audio('bgm', 'audio/bgm.mp3');
+    game.load.audio('ending', 'audio/tsuyuake.mp3');
 
     game.load.audio('sfx', 'audio/saku.mp3');
 
@@ -229,6 +231,8 @@ function create() {
     fx = game.add.audio('sfx');
     fx.allowMultiple = true;
     fx.addMarker('playerFire', 0, 0.749);
+
+    state = 'play';
 }
 
 function startBgm() {
@@ -306,6 +310,11 @@ function update() {
         if (game.time.now > firingTimer) {
             enemyFires();
         }
+        if (game.time.now > scoreTimer && state == "play") {
+            score += 10;
+            scoreText.text = scoreString + score;
+            scoreTimer = game.time.now + 1000;
+        }
 
         //  Run collision
         game.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
@@ -340,6 +349,7 @@ function collisionHandler(bullet, alien) {
     explosion.play('kaboom', 30, false, true);
 
     if (aliens.countLiving() == 0) {
+        state = 'clear';
         score += 1000;
         scoreText.text = scoreString + score;
 
@@ -392,6 +402,7 @@ function enemyHitsPlayer(player, bullet) {
 
         //the "click to restart" handler
         game.input.onTap.addOnce(restart, this);
+        state = 'gameover';
     }
 
 }
@@ -460,6 +471,8 @@ function restart() {
 
     //  A new level starts
     score = 0;
+    scoreText.text = scoreString + score;
+    
     bullets.callAll('kill');
 
     //resets the life count
@@ -474,7 +487,11 @@ function restart() {
     stateText.visible = false;
     nameText.visible = false;
 
-    startBgm();
+    if(state == 'clear'){
+        startBgm();
+    }
+    scoreTimer = game.time.now + 1000;
+    state = 'play';
 
 }
 
