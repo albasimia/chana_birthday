@@ -2,7 +2,8 @@ var params = new URLSearchParams(window.location.search)
 
 var width = 800;
 var height = 600;
-var messages = [{
+var messages = [
+    {
         name: "伊東マコト",
         msg: "貴様のお誕生日は沢山の\nマコトの犠牲の上に成り立っています。\nおめでとう。",
     },
@@ -17,6 +18,22 @@ var messages = [{
     {
         name: "香蘭",
         msg: "お誕生日おめでとう！\n素敵な一年を！",
+    },
+    {
+        name: "𝔫𝔢𝔴𝔟𝔦𝔢",
+        msg: "神が生まれた日\n(ネットの)海の向こう側から\nお誕生日おめでとうございます！",
+    },
+    {
+        name: "ぷりん",
+        msg: "ちゃやまさるお\n誕生日おめでとう( ᐡ.  ̫ .ᐡ )\nまた旅行いこうね♡",
+    },
+    {
+        name: "すーぎの",
+        msg: "ちゃなしへ\n4歳のお誕生日圧倒的におめでとう！\nまた一つ大人になったね！",
+    },
+    {
+        name: "たにこう",
+        msg: "お誕生日メッセージかぁ…\n何がいいかな、どんなのにしようか、\nえっ！もうカメラ回ってるの！？\n待って待っ",
     },
 ]
 
@@ -79,7 +96,7 @@ function preload() {
     game.load.image('starfield', 'img/sora.png');
     game.load.image('background', 'img/invaders/background2.png');
     game.load.image('heart', 'img/heart.png');
-    game.load.image('watari', 'img/heart.png');
+    game.load.image('watari', 'img/watari.png');
 
 
 
@@ -180,7 +197,7 @@ function create() {
     nameText.visible = false;
 
     for (var i = 0; i < 3; i++) {
-        var ship = lives.create(game.world.width - 100 + (30 * i), 60, 'heart');
+        var ship = lives.create(game.world.width - 100 + (40 * i), 20, 'heart');
         ship.anchor.setTo(0.5, 0.5);
     }
 
@@ -433,6 +450,8 @@ function resetBullet(bullet) {
 function restart() {
 
     //  A new level starts
+    score = 0;
+    bullets.callAll('kill');
 
     //resets the life count
     lives.callAll('revive');
