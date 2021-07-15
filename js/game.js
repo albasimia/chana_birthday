@@ -413,7 +413,7 @@ function enemyFires() {
         enemyBullet.reset(shooter.body.x, shooter.body.y);
 
         //moveToObject(出発地点、目的地、速度)
-        const speed = isWatari ? 600 : enemyFiresSpeed;
+        const speed = isWatari ? randRange(200 ,700) : enemyFiresSpeed;
         game.physics.arcade.moveToObject(enemyBullet, player, speed);
         // 敵の弾の間隔
         // firingTimer = game.time.now + enemyFiresInterval;
