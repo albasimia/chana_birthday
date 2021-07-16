@@ -43,6 +43,18 @@ var messages = [
         name: "たき",
         msg: "ちゃな誕生日おめでとう！\n楽しい事いっぱいの\n１年になりますように♡",
     },
+    {
+        name: "260",
+        msg: "ドスケベキングダムでは4歳で丁度成人！\nお酒もタバコも解禁です、おめでとう。",
+    },
+    {
+        name: "あおぱん",
+        msg: "ちゃな！誕生日おめでとう！！\n今年も仲良くしてね🥺",
+    },
+    {
+        name: "ｶﾀﾙｼｽﾜﾀﾘ",
+        msg: "ChromeでF12キーを押してみな。",
+    },
 ]
 
 var player;
@@ -357,9 +369,9 @@ function collisionHandler(bullet, alien) {
         enemyBullets.callAll('kill');
         watari.callAll('kill');
         const randIndex = randRange(0, messages.length - 1);
-        stateText.text = messages[randIndex].msg;
+        stateText.text = messages[params.get('msg') ? params.get('msg') -1 : randIndex].msg;
         stateText.visible = true;
-        nameText.text = messages[randIndex].name;
+        nameText.text = messages[params.get('msg') ? params.get('msg') -1 : randIndex].name;
         nameText.y = stateText.bottom + 30;
         nameText.visible = true;
 
