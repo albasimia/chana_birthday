@@ -2,58 +2,75 @@ var params = new URLSearchParams(window.location.search)
 
 var width = 800;
 var height = 600;
-var messages = [
-    {
+var messages = [{
+        id: 1,
         name: "伊東マコト",
         msg: "貴様のお誕生日は沢山の\nマコトの犠牲の上に成り立っています。\nおめでとう。",
     },
     {
+        id: 2,
         name: "エリシア",
         msg: "お誕生日ﾆｬ\nおめでﾆｬ-とうございﾆｬます！\nﾆｬ(*ΦωΦ)ฅ",
     },
     {
+        id: 3,
         name: "まきこ",
         msg: "チャナさんおたおめ〜！\nいつもいっぱいおはなししてくれて\n嬉しいよ〜すき！",
     },
     {
+        id: 4,
         name: "香蘭",
         msg: "お誕生日おめでとう！\n素敵な一年を！",
     },
     {
+        id: 5,
         name: "𝔫𝔢𝔴𝔟𝔦𝔢",
         msg: "神が生まれた日\n(ネットの)海の向こう側から\nお誕生日おめでとうございます！",
     },
     {
+        id: 6,
         name: "ぷりん",
         msg: "ちゃやまさる\nお誕生日おめでとう( ᐡ.  ̫ .ᐡ )\nまた旅行いこうね♡",
     },
     {
+        id: 7,
         name: "すーぎの",
         msg: "ちゃなしへ\n4歳のお誕生日圧倒的におめでとう！\nまた一つ大人になったね！",
     },
     {
+        id: 8,
         name: "たにこう",
         msg: "お誕生日メッセージかぁ…\n何がいいかな、どんなのにしようか、\nえっ！もうカメラ回ってるの！？\n待って待っ",
     },
     {
+        id: 9,
         name: "ライコ",
         msg: "Happy birthday Chana masala!\nIf you play this game,\nit's your birthday every day,\noh my god!",
     },
     {
+        id: 10,
         name: "たき",
         msg: "ちゃな誕生日おめでとう！\n楽しい事いっぱいの\n１年になりますように♡",
     },
     {
+        id: 11,
         name: "260",
         msg: "ドスケベキングダムでは4歳で丁度成人！\nお酒もタバコも解禁です、おめでとう。",
     },
     {
+        id: 12,
         name: "あおぱん",
         msg: "ちゃな！誕生日おめでとう！！\n今年も仲良くしてね🥺",
     },
     {
+        id: 13,
+        name: "ポポ",
+        msg: "お誕生日おめでとう！\nケーキ作れるようになったら\nもっていくね！",
+    },
+    {
+        id: 14,
         name: "ｶﾀﾙｼｽﾜﾀﾘ",
-        msg: "ChromeでF12キーを押してみな。",
+        msg: "ChromeでF12キーを押してElements。",
     },
 ]
 
@@ -74,6 +91,7 @@ var firingTimer = 0;
 var scoreTimer = 0;
 var state = 'start'; // start, play, clear, gameover
 var stateText;
+var msgText;
 var nameText;
 var livingEnemies = [];
 var watari;
@@ -95,7 +113,29 @@ var bgm;
 var fx;
 var ending;
 
+var enemyDeathFxCount = 0;
+
+// メッセージ数の表示
 document.querySelector('.msg_num').innerText = messages.length;
+
+// ハイスコアの表示
+const hiscore = document.querySelector('.hiscore');
+var hiscore_data = localStorage.getItem('hiscore');
+if (hiscore_data) {
+    hiscore.innerText = hiscore_data;
+} else {
+    hiscore_data = 0;
+}
+
+// 獲得済みメッセージの表示
+let obtained_messages = localStorage.getItem('obtained_messages');
+if (obtained_messages) {
+    obtained_messages = JSON.parse(obtained_messages);
+} else {
+    obtained_messages = [];
+}
+const msg_table = document.querySelector('.msg_table tbody');
+createMsgTable();
 
 var game = new Phaser.Game(width, height, Phaser.AUTO, 'makovader', {
     preload: preload,
@@ -104,15 +144,23 @@ var game = new Phaser.Game(width, height, Phaser.AUTO, 'makovader', {
     render: render
 });
 
+function createMsgTable() {
+    msg_table.textContent = null;
+    messages.forEach(element => {
+        if (obtained_messages.indexOf(element.id) != -1) {
+            msg_table.insertAdjacentHTML('beforeend', '<tr><th>' + element.name + '</th><td>' + element.msg + '</td></tr>');
+        } else {
+            msg_table.insertAdjacentHTML('beforeend', '<tr><th>???</th><td>?????</td></tr>');
+        }
+    });
+}
+
 function preload() {
 
     // images
     game.load.image('bullet', 'img/tsuno.png');
-    // game.load.image('enemyBullet', 'img/invaders/enemy-bullet.png');
     game.load.image('enemyBullet', 'img/unko.png');
-    // game.load.spritesheet('invader', '../assets/games/invaders/invader32x32x4.png', 32, 32);
     game.load.image('invader', 'img/makoto.png');
-    // game.load.image('ship', '../assets/games/invaders/player.png');
     game.load.image('ship', 'img/chana.png');
     game.load.spritesheet('kaboom', 'img/invaders/explode.png', 128, 128);
     game.load.image('starfield', 'img/sora.png');
@@ -126,7 +174,7 @@ function preload() {
     game.load.audio('bgm', 'audio/bgm.mp3');
     game.load.audio('ending', 'audio/tsuyuake.mp3');
 
-    game.load.audio('sfx', 'audio/saku.mp3');
+    game.load.audio('sfx', 'audio/sfx.mp3');
 
 }
 
@@ -194,7 +242,18 @@ function create() {
     // game.add.text(game.world.width - 100, 10, 'Lives : ', { font: '34px Arial', fill: '#fff' });
 
     //  Text
-    stateText = game.add.text(game.world.centerX, game.world.centerY, ' ', {
+    stateText = game.add.text(game.world.centerX, game.world.centerY, '- M A K O V A D E R -\nclick to start', {
+        font: '40px Impact',
+        fill: '#000',
+        align: 'center',
+        wordWrap: true,
+        wordWrapWidth: 800,
+        fontWeight: 'bold',
+    });
+    stateText.anchor.setTo(0.5, 0.5);
+
+
+    msgText = game.add.text(game.world.centerX, game.world.centerY, ' ', {
         font: '40px Arial',
         fill: '#ec008c',
         align: 'center',
@@ -202,8 +261,8 @@ function create() {
         wordWrapWidth: 800,
         fontWeight: 'bold',
     });
-    stateText.anchor.setTo(0.5, 0.5);
-    stateText.visible = false;
+    msgText.anchor.setTo(0.5, 0.7);
+    msgText.visible = false;
 
     nameText = game.add.text(game.world.centerX, game.world.centerY, ' ', {
         font: '30px Arial',
@@ -214,7 +273,7 @@ function create() {
         maxLines: 4,
         fontWeight: 'bold',
     });
-    nameText.anchor.setTo(0.5, 0.5);
+    nameText.anchor.setTo(0.5, 0);
     nameText.visible = false;
 
     for (var i = 0; i < 3; i++) {
@@ -243,8 +302,10 @@ function create() {
     fx = game.add.audio('sfx');
     fx.allowMultiple = true;
     fx.addMarker('playerFire', 0, 0.749);
+    fx.addMarker('enemyDeath', 1, 1.023);
+    fx.addMarker('playerDeath', 2.1, 1.170);
 
-    state = 'play';
+    game.input.onTap.addOnce(start, this);
 }
 
 function startBgm() {
@@ -299,6 +360,11 @@ function descend() {
 
 }
 
+function start() {
+    stateText.visible = false;
+    state = 'play';
+}
+
 function update() {
 
     //  Scroll the background
@@ -315,18 +381,22 @@ function update() {
         }
 
         //  Firing?
-        if (fireButton.isDown) {
-            fireBullet();
+        if (state == 'play') {
+            if (fireButton.isDown) {
+                fireBullet();
+            }
+            if (game.time.now > firingTimer) {
+                enemyFires();
+            }
+
+            // 1秒ごとにscoreに+10
+            if (game.time.now > scoreTimer) {
+                score += 10;
+                scoreText.text = scoreString + score;
+                scoreTimer = game.time.now + 1000;
+            }
         }
 
-        if (game.time.now > firingTimer) {
-            enemyFires();
-        }
-        if (game.time.now > scoreTimer && state == "play") {
-            score += 10;
-            scoreText.text = scoreString + score;
-            scoreTimer = game.time.now + 1000;
-        }
 
         //  Run collision
         game.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
@@ -350,6 +420,7 @@ function collisionHandler(bullet, alien) {
     //  When a bullet hits an alien we kill them both
     bullet.kill();
     alien.kill();
+    fx.play('enemyDeath', 0, 0.5);
 
     //  Increase the score
     score += 20;
@@ -360,20 +431,36 @@ function collisionHandler(bullet, alien) {
     explosion.reset(alien.body.x, alien.body.y);
     explosion.play('kaboom', 30, false, true);
 
+    // clear
     if (aliens.countLiving() == 0) {
         state = 'clear';
-        score += 1000;
+        score += lives.countLiving() * 1000;
         scoreText.text = scoreString + score;
+
+        if (hiscore_data < score) {
+            localStorage.setItem('hiscore', score);
+            hiscore.innerText = score;
+        }
 
         // enemyBullets.callAll('kill', this);
         enemyBullets.callAll('kill');
         watari.callAll('kill');
-        const randIndex = randRange(0, messages.length - 1);
-        stateText.text = messages[params.get('msg') ? params.get('msg') -1 : randIndex].msg;
-        stateText.visible = true;
-        nameText.text = messages[params.get('msg') ? params.get('msg') -1 : randIndex].name;
-        nameText.y = stateText.bottom + 30;
+        const msgIndex = params.get('msg') ? Number(params.get('msg')) : randRange(1, messages.length);
+        const msg_obj = messages.find((v) => v.id == msgIndex);
+        msgText.text = msg_obj.msg;
+        msgText.visible = true;
+        nameText.text = msg_obj.name + '\nclick to restart';
+        nameText.y = msgText.bottom + 10;
         nameText.visible = true;
+
+        console.log(obtained_messages.indexOf(msgIndex))
+        if(obtained_messages.indexOf(msgIndex) == -1){
+            obtained_messages.push(msgIndex)
+            createMsgTable();
+            localStorage.setItem('obtained_messages', JSON.stringify(obtained_messages));
+        }
+
+
 
         startEnding();
 
@@ -402,14 +489,22 @@ function enemyHitsPlayer(player, bullet) {
     explosion.reset(player.body.x, player.body.y);
     explosion.play('kaboom', 30, false, true);
 
+    fx.play('playerDeath', 0, 1);
+
     // When the player dies
     if (lives.countLiving() < 1) {
         player.kill();
-        bullets.callAll('kill'); 
+        bullets.callAll('kill');
         enemyBullets.callAll('kill');
         watari.callAll('kill');
 
-        stateText.text = " GAME OVER \n Click to restart";
+        if (hiscore_data < score) {
+            localStorage.setItem('hiscore', score);
+            hiscore.innerText = score;
+        }
+
+
+        stateText.text = "GAME OVER\nclick to restart";
         stateText.visible = true;
 
         //the "click to restart" handler
@@ -421,9 +516,9 @@ function enemyHitsPlayer(player, bullet) {
 
 function enemyFires() {
 
-    //  Grab the first bullet we can from the pool
     const isWatari = randRange(1, 5) == 1 ? true : false;
-    // const isWatari = true;
+
+    //  Grab the first bullet we can from the pool
     enemyBullet = isWatari ? watari.getFirstExists(false) : enemyBullets.getFirstExists(false);
 
     livingEnemies.length = 0;
@@ -445,7 +540,7 @@ function enemyFires() {
         enemyBullet.reset(shooter.body.x, shooter.body.y);
 
         //moveToObject(出発地点、目的地、速度)
-        const speed = isWatari ? randRange(200 ,700) : enemyFiresSpeed;
+        const speed = isWatari ? randRange(200, 700) : enemyFiresSpeed;
         game.physics.arcade.moveToObject(enemyBullet, player, speed);
         // 敵の弾の間隔
         // firingTimer = game.time.now + enemyFiresInterval;
@@ -466,7 +561,7 @@ function fireBullet() {
             bullet.reset(player.x, player.y);
             bullet.body.velocity.y = -400;
             bulletTime = game.time.now + 250;
-            fx.play('playerFire');
+            fx.play('playerFire', 0, 1);
         }
     }
 
@@ -480,7 +575,6 @@ function resetBullet(bullet) {
 }
 
 function restart() {
-
     //  A new level starts
     score = 0;
     scoreText.text = scoreString + score;
@@ -497,9 +591,10 @@ function restart() {
     player.revive();
     //hides the text
     stateText.visible = false;
+    msgText.visible = false;
     nameText.visible = false;
 
-    if(state == 'clear'){
+    if (state == 'clear') {
         startBgm();
     }
     scoreTimer = game.time.now + 1000;

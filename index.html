@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
-<!-- 
+  <!-- 
 HAPPY BIRTHDAY
           CHANA MASALA
                       2021.07.20
@@ -31,29 +31,34 @@ HAPPY BIRTHDAY
        `  `  `   `  `       ??    `   `  `      `       `
                   `             `  `        `    `  `
 -->
-<head>
-  <!-- <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title> -->
   <head>
-    <meta charset="UTF-8">
-    <title>チャナマサラ誕生日特設サイト 2021.7.20</title>
-    <meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0 minimal-ui">
-    <script src="site/js/jquery-2.0.3.min.js" type="text/javascript"></script>
-    <script src="site/phaser/phaser.2.6.2.min.js" type="text/javascript"></script>
-    <script src="site/phaser/blob.js" type="text/javascript"></script>
-    <script src="site/phaser/canvas-to-blob.js" type="text/javascript"></script>
-    <script src="site/phaser/filesaver.js" type="text/javascript"></script>
-    <script src="site/phaser/embed.js" type="text/javascript"></script>
-    <style>
+    <head>
+      <meta charset="UTF-8" />
+      <title>チャナマサラ誕生日特設サイト 2021.7.20</title>
+      <meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0 minimal-ui" />
+      <script src="site/js/jquery-2.0.3.min.js" type="text/javascript"></script>
+      <script src="site/phaser/phaser.2.6.2.min.js" type="text/javascript"></script>
+      <script src="site/phaser/blob.js" type="text/javascript"></script>
+      <script src="site/phaser/canvas-to-blob.js" type="text/javascript"></script>
+      <script src="site/phaser/filesaver.js" type="text/javascript"></script>
+      <script src="site/phaser/embed.js" type="text/javascript"></script>
+      <style>
+        html {
+          font-size: 18px;
+        }
         body {
-            margin: 0px;
-            padding: 0px;
-            font-family: Arial;
-            font-size: 14px;
-            background-color: #000000;
-            color: #fff;
+          margin: 0px;
+          padding: 0px;
+          font-family: Arial;
+          font-size: 14px;
+          /* background-color: #000000; */
+          background-image: url(img/chana.png);
+          background-color: rgba(255, 255, 255, 0.7);
+          background-blend-mode: lighten;
+        }
+        main {
+          max-width: 800px;
+          margin: 0 auto;
         }
         h1 {
           text-align: center;
@@ -67,33 +72,99 @@ HAPPY BIRTHDAY
           display: flex;
           justify-content: center;
         }
-        #makovader canvas{
-          /* width: 100vw !important; */
-          /* height: 75vw !important; */
+        main p {
+          font-size: 1rem;
         }
-    </style>
-</head>
-</head>
-<body>
-  <h1>チャナマサラ誕生日特設サイト 2021.7.20</h1>
-  <h2>〜マコベーダー〜</h2>
-  <div id="makovader"></div>
-  <h3>あそびかた</h3>
-  <p>ウンコを投げてくるマコトを倒してお誕生日メッセージを手に入れよう！！<br>
-  お誕生日メッセージは全部で<span class="msg_num"></span>種類あるぞ！！</p>
-  <ul>
-    <li>矢印左右で移動</li>
-    <li>スペースでツノ発射</li>
-  </ul>
+        main ul {
+          padding-inline-start: 1rem;
+          font-size: 1rem;
+        }
+        main table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 30px;
+        }
 
-  <h3>クレジット</h3>
-  <ul>
-    <li>クリア音：260</li>
-    <li>爆発音：ぷりん</li>
-    <li>ツノ発射音：朔夜（エリシア邸）</li>
-    <li>音楽：伊東マコト</li>
-    <li>製作：ｶﾀﾙｼｽﾜﾀﾘ</li>
-  </ul>
-  <script src="js/game.js"></script>
-</body>
+        main table tr {
+          border-bottom: solid 1px rgb(170, 170, 170);
+        }
+
+        main table tr:last-child {
+          border-bottom: none;
+        }
+
+        main table th {
+          position: relative;
+          text-align: left;
+          width: 30%;
+          background-color: rgb(81,200,235);
+          color: white;
+          text-align: center;
+          padding: 10px 0;
+        }
+        main table th:after {
+          display: block;
+          content: "";
+          width: 0px;
+          height: 0px;
+          position: absolute;
+          top: calc(50% - 10px);
+          right: -10px;
+          border-left: 10px solid #52c2d0;
+          border-top: 10px solid transparent;
+          border-bottom: 10px solid transparent;
+        }
+
+        main table td {
+          text-align: left;
+          width: 70%;
+          text-align: center;
+          background-color: #eee;
+          padding: 10px;
+        }
+      </style>
+    </head>
+  </head>
+  <body>
+    <main class="main">
+      <h1>チャナマサラ誕生日特設サイト 2021.7.20</h1>
+      <div id="makovader"></div>
+      <section class="howto">
+        <h2>〜あそびかた〜</h2>
+        <p>
+          ウンコを投げてくるマコトを倒してお誕生日メッセージを集めよう！！<br />
+          お誕生日メッセージは全部で<span class="msg_num"></span>種類あるぞ！！
+        </p>
+        <ul>
+          <li>矢印左右で移動</li>
+          <li>スペースでツノ発射</li>
+        </ul>
+      </section>
+
+      <section class="achievement">
+        <h2>〜実績〜</h2>
+        <table class="hiscore_table">
+          <tr>
+            <th>ハイスコア</th>
+            <td class="hiscore">-</td>
+          </tr>
+        </table>
+        <table class="msg_table">
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="credit">
+        <h2>〜クレジット〜</h2>
+        <ul>
+          <li>クリア音：260</li>
+          <li>爆発音：ぷりん</li>
+          <li>ツノ発射音：朔夜（エリシア邸）</li>
+          <li>音楽：伊東マコト</li>
+          <li>製作：ｶﾀﾙｼｽﾜﾀﾘ</li>
+        </ul>
+      </section>
+    </main>
+    <script src="js/game.js"></script>
+  </body>
 </html>
