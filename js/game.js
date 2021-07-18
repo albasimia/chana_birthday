@@ -453,7 +453,6 @@ function collisionHandler(bullet, alien) {
         nameText.y = msgText.bottom + 10;
         nameText.visible = true;
 
-        console.log(obtained_messages.indexOf(msgIndex))
         if(obtained_messages.indexOf(msgIndex) == -1){
             obtained_messages.push(msgIndex)
             createMsgTable();
