@@ -124,7 +124,7 @@ document.querySelector('.msg_num').innerText = messages.length;
 
 // ハイスコアの表示
 const hiscore = document.querySelector('.hiscore');
-var hiscore_data = localStorage.getItem('hiscore');
+var hiscore_data = JSON.parse(localStorage.getItem('hiscore'));
 if (hiscore_data) {
     hiscore.innerText = hiscore_data;
 } else {
@@ -449,6 +449,7 @@ function collisionHandler(bullet, alien) {
         if (hiscore_data < score) {
             localStorage.setItem('hiscore', score);
             hiscore.innerText = score;
+            hiscore_data = score;
         }
 
         // enemyBullets.callAll('kill', this);
@@ -509,6 +510,7 @@ function enemyHitsPlayer(player, bullet) {
         if (hiscore_data < score) {
             localStorage.setItem('hiscore', score);
             hiscore.innerText = score;
+            hiscore_data = score;
         }
 
 
