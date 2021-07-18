@@ -69,6 +69,11 @@ var messages = [{
     },
     {
         id: 14,
+        name: "エフォフォイ",
+        msg: "お誕生日おめでとう。\n4歳になったと言うことは時間にして35040\n時間経過したということでおめでたい限り\nです。あ、でもこれを見てる時は生まれた時\n間すぎてないかな？そもそも１年は正確には\n365.242日だから正確には24×365じゃないし、\nだから閏年とかあるんだけど、\nそれも400年に3日は違ってて（以下省略",
+    },
+    {
+        id: 15,
         name: "ｶﾀﾙｼｽﾜﾀﾘ",
         msg: "ChromeでF12キーを押してElements。",
     },
@@ -112,8 +117,7 @@ var enemyFiresSpeed = 360;
 var bgm;
 var fx;
 var ending;
-
-var enemyDeathFxCount = 0;
+var clearVoices;
 
 // メッセージ数の表示
 document.querySelector('.msg_num').innerText = messages.length;
@@ -303,22 +307,27 @@ function create() {
     fx.allowMultiple = true;
     fx.addMarker('playerFire', 0, 0.749);
     fx.addMarker('enemyDeath', 1, 1.023);
-    fx.addMarker('playerDeath', 2.1, 1.170);
+    fx.addMarker('playerDeath', 2.1, 1.17);
+    fx.addMarker('omedetou', 3.5, 0.65);
+    fx.addMarker('nice', 4.2, 0.858);
+    fx.addMarker('victory', 5.1, 0.937);
+    fx.addMarker('youwin', 6.1, 0.946);
+
+    clearVoices = ['omedetou', 'nice', 'victory', 'youwin'];
 
     game.input.onTap.addOnce(start, this);
 }
 
 function startBgm() {
 
-    // sounds.shift();
     ending.stop();
     bgm.loopFull(0.4);
-    // bgm.play("", 0, 0.4, true);
-    // bgm.onLoop.add(hasLooped, this);
 }
 
 function startEnding() {
     bgm.stop();
+    const voiceKey = clearVoices[randRange(0, clearVoices.length -1)];
+    game.time.events.add(1000, function(){fx.play(voiceKey, 0, 0.8)})
     ending.loopFull(0.2);
 }
 
