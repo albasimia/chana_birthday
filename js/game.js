@@ -185,7 +185,7 @@ function preload() {
 
     //sounds
     game.load.audio('bgm', 'audio/bgm.mp3');
-    game.load.audio('ending', 'audio/tsuyuake.mp3');
+    game.load.audio('ending', 'audio/spice.mp3');
 
     game.load.audio('sfx', 'audio/sfx.mp3');
 
