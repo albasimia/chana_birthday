@@ -118,6 +118,7 @@ var bgm;
 var fx;
 var ending;
 var clearVoices;
+var gameoverVoices;
 
 // メッセージ数の表示
 document.querySelector('.msg_num').innerText = messages.length;
@@ -141,12 +142,20 @@ if (obtained_messages) {
 const msg_table = document.querySelector('.msg_table tbody');
 createMsgTable();
 
-var game = new Phaser.Game(width, height, Phaser.AUTO, 'makovader', {
-    preload: preload,
-    create: create,
-    update: update,
-    render: render
-});
+
+var game;
+var regexp = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+if(window.navigator.userAgent.search(regexp) !== -1){
+    const caption = document.querySelector('.caption');
+    caption.classList.remove('sp_only');
+}else {
+    game  = new Phaser.Game(width, height, Phaser.AUTO, 'makovader', {
+        preload: preload,
+        create: create,
+        update: update,
+        render: render
+    });
+}
 
 function createMsgTable() {
     msg_table.textContent = null;
@@ -312,8 +321,13 @@ function create() {
     fx.addMarker('nice', 4.2, 0.858);
     fx.addMarker('victory', 5.1, 0.937);
     fx.addMarker('youwin', 6.1, 0.946);
+    fx.addMarker('gameover', 7.1, 1.17);
+    fx.addMarker('makotono', 8.3, 1.661);
+    fx.addMarker('mouikkai', 10, 1.087);
+    fx.addMarker('tyottotamaga', 11.1, 1.51);
 
     clearVoices = ['omedetou', 'nice', 'victory', 'youwin'];
+    gameoverVoices = ['gameover', 'makotono', 'mouikkai', 'tyottotamaga'];
 
     game.input.onTap.addOnce(start, this);
 }
@@ -321,14 +335,19 @@ function create() {
 function startBgm() {
 
     ending.stop();
-    bgm.loopFull(0.4);
+    bgm.loopFull(0.3);
 }
 
 function startEnding() {
     bgm.stop();
     const voiceKey = clearVoices[randRange(0, clearVoices.length -1)];
-    game.time.events.add(1000, function(){fx.play(voiceKey, 0, 0.8)})
+    game.time.events.add(1000, function(){fx.play(voiceKey, 0, 0.8)});
     ending.loopFull(0.2);
+}
+
+function gameOver() {
+    const voiceKey = gameoverVoices[randRange(0, gameoverVoices.length -1)];
+    game.time.events.add(1000, function(){fx.play(voiceKey, 0, 1.5)});
 }
 
 function createAliens() {
@@ -513,7 +532,7 @@ function enemyHitsPlayer(player, bullet) {
             hiscore_data = score;
         }
 
-
+        gameOver();
         stateText.text = "GAME OVER\nclick to restart";
         stateText.visible = true;
 
